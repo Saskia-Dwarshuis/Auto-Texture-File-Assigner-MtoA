@@ -1,0 +1,15 @@
+createRenderNodeCB -as2DTexture "" file "";
+
+setAttr "file1.colorSpace" "sRGB";
+
+
+setAttr -type "string" file1.colorSpace "Raw";
+setAttr -type "string" file1.colorSpace "sRGB";
+
+
+setAttr "file1.ignoreColorSpaceFileRules" 1;
+
+
+setColorSpaceAttrCB
+
+
