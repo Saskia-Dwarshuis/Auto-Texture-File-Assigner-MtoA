@@ -2,6 +2,8 @@ import maya.cmds as cmds
 import maya.mel as mel
 
 # Shader attribute / texture file name dictionary
+# To add additional search terms to an attribute, enter as a comma delimited list 
+  # Eg. 'normalCamera': 'Normal' >>> 'normalCamera': 'Normal, OpenGLNormal, DirectXNormal'
 FileNameToAttributeDictionary = {
   'base': 'BaseWeight', 'baseColor': 'BaseColor', 'diffuseRoughness': 'DiffuseRoughness', 'metalness': 'Metallic', 
   'specular': 'SpecularWeight', 'specularColor': 'SpecularColor', 'specularRoughness': 'Roughness', 
