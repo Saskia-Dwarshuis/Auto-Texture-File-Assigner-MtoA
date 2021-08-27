@@ -1,7 +1,7 @@
 import maya.cmds as cmds
 import maya.mel as mel
 
-# 
+# Shader attribute / texture file name dictionary
 FileNameToAttributeDictionary = {'baseColor': 'BaseColor', 'metalness': 'Metallic', 'specularRoughness': 'Roughness', 'normalCamera': 'Normal'}
 
 # Shader attributes that require RGB color
@@ -47,9 +47,9 @@ for CurrentFile in SelectedFiles:
     cmds.setAttr(currentFileNode + ".ignoreColorSpaceFileRules", 1)
     cmds.setAttr(currentFileNode + '.colorSpace', "Raw", type="string")
     cmds.setAttr(currentFileNode + '.fileTextureName', CurrentFile, type="string")
-    # Generate normal map node
-    # Connect file node RGB out to normal map
-    # Connect normal map node to standard surface
+    NormalMapUtility = cmds.shadingNode('aiNormalMap', asUtility=True)
+    cmds.connectAttr(f=True, currentFileNode + ".outRGB", NormalMapUtility + ".input")
+    cmds.connectAttr(f=True, NormalMapUtility + ".outValue", SelectedShader + ".normalCamera")
   
   # Handle the height map as a special case
   elif CorrespondingAttribute == "height":
@@ -59,13 +59,9 @@ for CurrentFile in SelectedFiles:
     cmds.setAttr(currentFileNode + ".alphaOffset", -0.5)
     cmds.setAttr(currentFileNode + ".alphaIsLuminance", 1)
     cmds.setAttr(currentFileNode + '.fileTextureName', CurrentFile, type="string")
-    # Generate displacement node
     DisplacementShader = mel.eval('createRenderNodeCB -asShader "displacementShader" displacementShader ""')
-    # Connect file node Alpha out to displacement
     cmds.connectAttr(f=True, currentFileNode + ".outAlpha", DisplacementShader[0] + ".displacement")
-    # Find master shading node
     ShadingEngineShader = cmds.listConnections(SelectedShader, s=False, t="shadingEngine")
-    # Connect dispalcement node to selected shaders shading group
     cmds.connectAttr(f=True, DisplacementShader[0] + ".displacement", ShadingEngineShader[0] + ".displacementShader")
     
   # Handle all other textures
