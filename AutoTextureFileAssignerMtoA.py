@@ -1,31 +1,11 @@
-"""
-
-Select aiStandardSurface you want to assign textures to
-Run script via shortcut
-
-Script:
-> [Arnold Channel, file channel names]
-> File selection query
-> Analyzes file names
-  >>  Non-UDIM or UDIM? (Is ".1001" in the file name?)
-  >> Which channel does it belong to?
-      >>> Channel > file color space, color or alpha out
-      >>> Is it a normal map? If so, generate "normal map" node too
-      >>> Is it a height map? If so, generate a displacement shader. The file node should adjust the middle valueas well.
-
-ChannelAttributes
-
-
-
-"""
-
-
 import maya.cmds as cmds
 import maya.mel as mel
 
+# 
 FileNameToAttributeDictionary = {'baseColor': 'BaseColor', 'metalness': 'Metallic', 'specularRoughness': 'Roughness', 'normalCamera': 'Normal'}
-RGBOut = ['baseColor', 'specularColor', 'transmissionColor', 'transmissionScatter', 'subsurfaceColor', 'subsurfaceRadius', 'coatColor', 'sheenColor', 'emissionColor']
 
+# Shader attributes that require RGB color
+RGBOut = ['baseColor', 'specularColor', 'transmissionColor', 'transmissionScatter', 'subsurfaceColor', 'subsurfaceRadius', 'coatColor', 'sheenColor', 'emissionColor']
 
 # Get the name of the selected aiStandardSurface shader node
 SelectedShader = cmds.Is(l=True, sl=True)
@@ -63,9 +43,9 @@ for CurrentFile in SelectedFiles:
         
   # Handle the normal map as a special case
   if CorrespondingAttribute == "normalCamera":
-    # Generate file node
-    # Ignore color space
-    # Set to Raw
+    currentFileNode = mel.eval('createRenderNodeCB -as2DTexture "" file ""')
+    cmds.setAttr(currentFileNode + ".ignoreColorSpaceFileRules", 1)
+    cmds.setAttr(currentFileNode + '.colorSpace', "Raw", type="string")
     # Set file name
     # Generate normal map node
     # Connect file node RGB out to normal map
@@ -73,11 +53,11 @@ for CurrentFile in SelectedFiles:
   
   # Handle the height map as a special case
   elif CorrespondingAttribute == "height":
-    # Generate file node
-    # Ignore color space
-    # Set to Raw
-    # Adjust alpha value
-    # Alpha as luminance
+    currentFileNode = mel.eval('createRenderNodeCB -as2DTexture "" file ""')
+    cmds.setAttr(currentFileNode + ".ignoreColorSpaceFileRules", 1)
+    cmds.setAttr(currentFileNode + '.colorSpace', "Raw", type="string")
+    cmds.setAttr(currentFileNode + ".alphaOffset", -0.5)
+    cmds.setAttr(currentFileNode + ".alphaIsLuminance", 1)
     # Set file name
     # Generate displacement node
     # Connect file node Alpha out to displacement
@@ -116,21 +96,6 @@ for CurrentFile in SelectedFiles:
         
 
 
-
-
-
-# File node generator:
-  createRenderNodeCB -as2DTexture "" file "";
-
-# File color space setting:
-  setAttr -type "string" file1.colorSpace "Raw";
-  setAttr -type "string" file1.colorSpace "sRGB";
-
-# File ignore color space:
-  setAttr "file1.ignoreColorSpaceFileRules" 1;
-  
-# File "Alpha is Luminance":
-  setAttr "file1.alphaIsLuminance" 1;
   
 # Set file name
   string $fileName = "test";
