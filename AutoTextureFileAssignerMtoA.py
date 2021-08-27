@@ -8,7 +8,8 @@ FileNameToAttributeDictionary = {'baseColor': 'BaseColor', 'metalness': 'Metalli
 RGBOut = ['baseColor', 'specularColor', 'transmissionColor', 'transmissionScatter', 'subsurfaceColor', 'subsurfaceRadius', 'coatColor', 'sheenColor', 'emissionColor']
 
 # Get the name of the selected aiStandardSurface shader node
-SelectedShader = cmds.ls(l=True, sl=True)
+SelectedShader = cmds.ls(l=True, type="aiStandardSurface", sl=True)
+SelectedShader = SelectedShader[0]
 
 # Get texture files
 SelectedFiles = cmds.fileDialog2(ds=1, fm=4)
@@ -25,9 +26,9 @@ for CurrentFile in SelectedFiles:
     isUDIM = True
   
   # "Sanitizing" file name
-  FirstUnderscoreIndex = currentFile.find("_")
-  FirstPeriodIndex = currentFile.find(".")
-  TruncatedFileName = currentFile[FirstUnderscoreIndex + 1:FirstPeriodIndex]
+  FirstUnderscoreIndex = CurrentFile.find("_")
+  FirstPeriodIndex = CurrentFile.find(".")
+  TruncatedFileName = CurrentFile[FirstUnderscoreIndex + 1:FirstPeriodIndex]
   
   # Loop through shader attributes to find which attribute correspends to the current file
   for CurrentDictionaryKey in FileNameToAttributeDictionary.keys():
@@ -38,22 +39,30 @@ for CurrentFile in SelectedFiles:
       if TruncatedFileName.lower() == SearchString.lower():
         CorrespondingAttribute = CurrentDictionaryKey
         
-        if RGBOut.list(CorrespondingAttribute) > 0:
+        if CorrespondingAttribute in RGBOut:
           isRGBOut = True
         
   # Handle the normal map as a special case
-  if CorrespondingAttribute == "normalCamera":
+  if CorrespondingAttribute == "normalCamera":    
     currentFileNode = mel.eval('createRenderNodeCB -as2DTexture "" file ""')
+      
+    if isUDIM == True:
+      cmds.setAttr(currentFileNode + ".uvTilingMode", 3)
+      
     cmds.setAttr(currentFileNode + ".ignoreColorSpaceFileRules", 1)
     cmds.setAttr(currentFileNode + '.colorSpace', "Raw", type="string")
     cmds.setAttr(currentFileNode + '.fileTextureName', CurrentFile, type="string")
     NormalMapUtility = cmds.shadingNode('aiNormalMap', asUtility=True)
-    cmds.connectAttr(f=True, currentFileNode + ".outRGB", NormalMapUtility + ".input")
-    cmds.connectAttr(f=True, NormalMapUtility + ".outValue", SelectedShader + ".normalCamera")
+    cmds.connectAttr(currentFileNode + '.outColor', NormalMapUtility + '.input')
+    cmds.connectAttr(NormalMapUtility + '.outValue', SelectedShader + '.normalCamera') 
   
   # Handle the height map as a special case
   elif CorrespondingAttribute == "height":
     currentFileNode = mel.eval('createRenderNodeCB -as2DTexture "" file ""')
+    
+    if isUDIM == True:
+        cmds.setAttr(currentFileNode + ".uvTilingMode", 3)
+    
     cmds.setAttr(currentFileNode + ".ignoreColorSpaceFileRules", 1)
     cmds.setAttr(currentFileNode + '.colorSpace', "Raw", type="string")
     cmds.setAttr(currentFileNode + ".alphaOffset", -0.5)
