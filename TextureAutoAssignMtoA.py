@@ -11,7 +11,8 @@ Script:
       >>> Is it a normal map? If so, generate "normal map" node too
       >>> Is it a height map? If so, generate a displacement shader. The file node should adjust the middle valueas well.
 
-FileNameToChannelDictionary = {'baseColor': 'BaseColor', 'metalness': 'Metallic', 'specularRoughness': 'Roughness', 'normalCamera': 'Normal'}
+
+
 ChannelAttributes
 
 
@@ -21,22 +22,24 @@ ChannelAttributes
 ColorSpace, AlphaIsLum, RGBAOut, isNormal, isHeight
 
 
-import maya.cmds
+import maya.cmds as cmds
 
 
+
+FileNameToChannelDictionary = {'baseColor': 'BaseColor', 'metalness': 'Metallic', 'specularRoughness': 'Roughness', 'normalCamera': 'Normal'}
+
+# Get the name of the selected aiStandardSurface shader node
+
+SelectedShader = cmds.Is(l=True, sl=True)
+
+print(SelectedShader)
 
 # Get texture files
 
-SelectedFiles = 
+SelectedFiles = cmds.fileDialog2(ds=1, fm=4)
+# for currentFile in SelectedFiles:
 
-fileDialog2 -ds 1 -fm 4;
-
-
-
-
-for currentFile in SelectedFiles:
-
-
+print(SelectedFiles)
 
 
 
