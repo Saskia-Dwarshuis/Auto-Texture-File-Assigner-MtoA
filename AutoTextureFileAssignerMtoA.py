@@ -2,13 +2,13 @@ import maya.cmds as cmds
 import maya.mel as mel
 
 # Shader attribute / texture file name dictionary
-FileNameToAttributeDictionary = {'baseColor': 'BaseColor', 'metalness': 'Metallic', 'specularRoughness': 'Roughness', 'normalCamera': 'Normal'}
+FileNameToAttributeDictionary = {'baseColor': 'BaseColor', 'metalness': 'Metallic', 'specularRoughness': 'Roughness', 'normalCamera': 'Normal', 'height': 'Height'}
 
 # Shader attributes that require RGB color
 RGBOut = ['baseColor', 'specularColor', 'transmissionColor', 'transmissionScatter', 'subsurfaceColor', 'subsurfaceRadius', 'coatColor', 'sheenColor', 'emissionColor']
 
 # Get the name of the selected aiStandardSurface shader node
-SelectedShader = cmds.Is(l=True, sl=True)
+SelectedShader = cmds.ls(l=True, sl=True)
 
 # Get texture files
 SelectedFiles = cmds.fileDialog2(ds=1, fm=4)
