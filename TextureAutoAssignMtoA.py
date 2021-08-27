@@ -1,3 +1,5 @@
+"""
+
 Select aiStandardSurface you want to assign textures to
 Run script via shortcut
 
@@ -11,36 +13,50 @@ Script:
       >>> Is it a normal map? If so, generate "normal map" node too
       >>> Is it a height map? If so, generate a displacement shader. The file node should adjust the middle valueas well.
 
-
-
 ChannelAttributes
 
-
-
-
-
 ColorSpace, AlphaIsLum, RGBAOut, isNormal, isHeight
+
+"""
 
 
 import maya.cmds as cmds
 
 
 
+
 FileNameToChannelDictionary = {'baseColor': 'BaseColor', 'metalness': 'Metallic', 'specularRoughness': 'Roughness', 'normalCamera': 'Normal'}
 
 # Get the name of the selected aiStandardSurface shader node
-
 SelectedShader = cmds.Is(l=True, sl=True)
 
-print(SelectedShader)
+
 
 # Get texture files
-
 SelectedFiles = cmds.fileDialog2(ds=1, fm=4)
-# for currentFile in SelectedFiles:
 
-print(SelectedFiles)
 
+for CurrentFile in SelectedFiles:
+  
+  isUDIM = False
+  CorrespondingAttribute = "unassigned"
+  
+  if CurrentFile.find(".1001.") > -1:
+    isUDIM = True
+  
+  FirstUnderscoreIndex = currentFile.find("_")
+  FirstPeriodIndex = currentFile.find(".")
+  TruncatedFileName = currentFile[FirstUnderscoreIndex + 1:FirstPeriodIndex]
+  
+  for CurrentDictionaryKey in FileNameToChannelDictionary.keys():
+    DictionaryValue = FileNameToChannelDictionary[CurrentDictionaryKey]
+    SearchTermList = DictionaryValue.split(", ")
+    
+    for SearchString in SearchTermList:    
+      if TruncatedFileName.lower() == SearchString.lower():
+        CorrespondingAttribute = CurrentDictionaryKey
+     
+  
 
 
 
