@@ -15,31 +15,30 @@ Script:
 
 ChannelAttributes
 
-ColorSpace, AlphaIsLum, RGBAOut, isNormal, isHeight
+
 
 """
 
 
 import maya.cmds as cmds
-
-
-
+import maya.mel as mel
 
 FileNameToChannelDictionary = {'baseColor': 'BaseColor', 'metalness': 'Metallic', 'specularRoughness': 'Roughness', 'normalCamera': 'Normal'}
+RGBOut = ['baseColor', 'specularColor', 'transmissionColor', 'transmissionScatter', 'subsurfaceColor', 'subsurfaceRadius', 'coatColor', 'sheenColor', 'emissionColor']
+
 
 # Get the name of the selected aiStandardSurface shader node
 SelectedShader = cmds.Is(l=True, sl=True)
 
-
-
 # Get texture files
 SelectedFiles = cmds.fileDialog2(ds=1, fm=4)
 
-
+# Loop through selected files to figure out which texture goes to what shader channel
 for CurrentFile in SelectedFiles:
   
   isUDIM = False
   CorrespondingAttribute = "unassigned"
+  isRGBOut = False
   
   if CurrentFile.find(".1001.") > -1:
     isUDIM = True
@@ -52,11 +51,48 @@ for CurrentFile in SelectedFiles:
     DictionaryValue = FileNameToChannelDictionary[CurrentDictionaryKey]
     SearchTermList = DictionaryValue.split(", ")
     
-    for SearchString in SearchTermList:    
+    for SearchString in SearchTermList:
       if TruncatedFileName.lower() == SearchString.lower():
         CorrespondingAttribute = CurrentDictionaryKey
-     
-  
+        
+        if RGBOut.list(CorrespondingAttribute) > 0:
+          isRGBOut = True
+        
+  if CorrespondingAttribute == "normalCamera":
+    # do normal map generation and connection
+  elif CorrespondingAttribute == "height":
+    # do displacement map generation and connection
+  else:
+    # Handle all other files
+      if isRGBOut == True:
+        currentFileNode = mel.eval('createRenderNodeCB -as2DTexture "" file ""')
+        
+        if isUDIM == True:
+          cmds.setAttr(currentFileNode + ".uvTilingMode", 3)
+        
+        # Set file name
+        # Connect RGB to shader
+        
+                     
+
+          
+      else: 
+        currentFileNode = mel.eval('createRenderNodeCB -as2DTexture "" file ""')
+        
+        if isUDIM == True:
+          cmds.setAttr(currentFileNode + ".uvTilingMode", 3)
+        
+        cmds.setAttr(currentFileNode + ".ignoreColorSpaceFileRules", 1)
+        cmds.setAttr(currentFileNode + '.colorSpace', "Raw", type="string")
+        cmds.setAttr(currentFileNode + ".alphaIsLuminance", 1)
+        
+        # Set file name
+        # Connect Alpha to shader
+        
+
+        
+        
+        
 
 
 
@@ -71,10 +107,6 @@ for CurrentFile in SelectedFiles:
 
 # File ignore color space:
   setAttr "file1.ignoreColorSpaceFileRules" 1;
-
-# File non-UDIM/UDIM: 
-  setAttr "file1.uvTilingMode" 0;
-  setAttr "file1.uvTilingMode" 3;
   
 # File "Alpha is Luminance":
   setAttr "file1.alphaIsLuminance" 1;
