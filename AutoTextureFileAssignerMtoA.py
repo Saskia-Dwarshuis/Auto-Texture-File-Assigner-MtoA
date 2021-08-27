@@ -53,8 +53,8 @@ for CurrentFile in SelectedFiles:
     cmds.setAttr(currentFileNode + '.colorSpace', "Raw", type="string")
     cmds.setAttr(currentFileNode + '.fileTextureName', CurrentFile, type="string")
     NormalMapUtility = cmds.shadingNode('aiNormalMap', asUtility=True)
-    cmds.connectAttr(currentFileNode + '.outColor', NormalMapUtility + '.input')
-    cmds.connectAttr(NormalMapUtility + '.outValue', SelectedShader + '.normalCamera') 
+    cmds.connectAttr(currentFileNode + '.outColor', NormalMapUtility + '.input', f=True)
+    cmds.connectAttr(NormalMapUtility + '.outValue', SelectedShader + '.normalCamera', f=True) 
   
   # Handle the height map as a special case
   elif CorrespondingAttribute == "height":
@@ -69,10 +69,11 @@ for CurrentFile in SelectedFiles:
     cmds.setAttr(currentFileNode + ".alphaIsLuminance", 1)
     cmds.setAttr(currentFileNode + '.fileTextureName', CurrentFile, type="string")
     DisplacementShader = mel.eval('createRenderNodeCB -asShader "displacementShader" displacementShader ""')
-    cmds.connectAttr(f=True, currentFileNode + ".outAlpha", DisplacementShader[0] + ".displacement")
-    ShadingEngineShader = cmds.listConnections(SelectedShader, s=False, t="shadingEngine")
-    cmds.connectAttr(f=True, DisplacementShader[0] + ".displacement", ShadingEngineShader[0] + ".displacementShader")
+    cmds.connectAttr(currentFileNode + '.outAlpha', DisplacementShader + '.displacement', f=True)
+    ShadingEngineShader = cmds.listConnections(SelectedShader, t="shadingEngine", s=False)
+    cmds.connectAttr(DisplacementShader + '.displacement', ShadingEngineShader[0] + '.displacementShader', f=True)
     
+
   # Handle all other textures
   else:
     
@@ -84,7 +85,7 @@ for CurrentFile in SelectedFiles:
         cmds.setAttr(currentFileNode + ".uvTilingMode", 3)
       
       cmds.setAttr(currentFileNode + '.fileTextureName', CurrentFile, type="string")
-      cmds.connectAttr(f=True, currentFileNode + ".outColor", SelectedShader + "." + CorrespondingAttribute)
+      cmds.connectAttr(currentFileNode + '.outColor', SelectedShader + '.' + CorrespondingAttribute, f=True)
 
     # Handle Raw color space textures
     else: 
@@ -97,4 +98,4 @@ for CurrentFile in SelectedFiles:
       cmds.setAttr(currentFileNode + '.colorSpace', "Raw", type="string")
       cmds.setAttr(currentFileNode + ".alphaIsLuminance", 1)
       cmds.setAttr(currentFileNode + '.fileTextureName', CurrentFile, type="string")     
-      cmds.connectAttr(f=True, currentFileNode + ".outAlpha", SelectedShader + "." + CorrespondingAttribute)
+      cmds.connectAttr(currentFileNode + '.outAlpha', SelectedShader + '.' + CorrespondingAttribute, f=True)
