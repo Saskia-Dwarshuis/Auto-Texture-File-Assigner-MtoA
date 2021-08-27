@@ -23,7 +23,7 @@ ChannelAttributes
 import maya.cmds as cmds
 import maya.mel as mel
 
-FileNameToChannelDictionary = {'baseColor': 'BaseColor', 'metalness': 'Metallic', 'specularRoughness': 'Roughness', 'normalCamera': 'Normal'}
+FileNameToAttributeDictionary = {'baseColor': 'BaseColor', 'metalness': 'Metallic', 'specularRoughness': 'Roughness', 'normalCamera': 'Normal'}
 RGBOut = ['baseColor', 'specularColor', 'transmissionColor', 'transmissionScatter', 'subsurfaceColor', 'subsurfaceRadius', 'coatColor', 'sheenColor', 'emissionColor']
 
 
@@ -40,15 +40,18 @@ for CurrentFile in SelectedFiles:
   CorrespondingAttribute = "unassigned"
   isRGBOut = False
   
+  # Flag if the file uses UDIM space
   if CurrentFile.find(".1001.") > -1:
     isUDIM = True
   
+  # "Sanitizing" file name
   FirstUnderscoreIndex = currentFile.find("_")
   FirstPeriodIndex = currentFile.find(".")
   TruncatedFileName = currentFile[FirstUnderscoreIndex + 1:FirstPeriodIndex]
   
-  for CurrentDictionaryKey in FileNameToChannelDictionary.keys():
-    DictionaryValue = FileNameToChannelDictionary[CurrentDictionaryKey]
+  # Loop through shader attributes to find which attribute correspends to the current file
+  for CurrentDictionaryKey in FileNameToAttributeDictionary.keys():
+    DictionaryValue = FileNameToAttributeDictionary[CurrentDictionaryKey]
     SearchTermList = DictionaryValue.split(", ")
     
     for SearchString in SearchTermList:
@@ -58,36 +61,54 @@ for CurrentFile in SelectedFiles:
         if RGBOut.list(CorrespondingAttribute) > 0:
           isRGBOut = True
         
+  # Handle the normal map as a special case
   if CorrespondingAttribute == "normalCamera":
-    # do normal map generation and connection
+    # Generate file node
+    # Ignore color space
+    # Set to Raw
+    # Set file name
+    # Generate normal map node
+    # Connect file node RGB out to normal map
+    # Connect normal map node to standard surface
+  
+  # Handle the height map as a special case
   elif CorrespondingAttribute == "height":
-    # do displacement map generation and connection
+    # Generate file node
+    # Ignore color space
+    # Set to Raw
+    # Adjust alpha value
+    # Alpha as luminance
+    # Set file name
+    # Generate displacement node
+    # Connect file node Alpha out to displacement
+    # Connect dispalcement node to selected shaders shading group
+    
+  # Handle all other textures
   else:
-    # Handle all other files
-      if isRGBOut == True:
-        currentFileNode = mel.eval('createRenderNodeCB -as2DTexture "" file ""')
-        
-        if isUDIM == True:
-          cmds.setAttr(currentFileNode + ".uvTilingMode", 3)
-        
-        # Set file name
-        # Connect RGB to shader
-        
-                     
+    
+    # Handle sRGB color space textures
+    if isRGBOut == True:
+      currentFileNode = mel.eval('createRenderNodeCB -as2DTexture "" file ""')
 
-          
-      else: 
-        currentFileNode = mel.eval('createRenderNodeCB -as2DTexture "" file ""')
-        
-        if isUDIM == True:
-          cmds.setAttr(currentFileNode + ".uvTilingMode", 3)
-        
-        cmds.setAttr(currentFileNode + ".ignoreColorSpaceFileRules", 1)
-        cmds.setAttr(currentFileNode + '.colorSpace', "Raw", type="string")
-        cmds.setAttr(currentFileNode + ".alphaIsLuminance", 1)
-        
-        # Set file name
-        # Connect Alpha to shader
+      if isUDIM == True:
+        cmds.setAttr(currentFileNode + ".uvTilingMode", 3)
+
+      # Set file name
+      # Connect RGB to shader
+
+    # Handle Raw color space textures
+    else: 
+      currentFileNode = mel.eval('createRenderNodeCB -as2DTexture "" file ""')
+
+      if isUDIM == True:
+        cmds.setAttr(currentFileNode + ".uvTilingMode", 3)
+
+      cmds.setAttr(currentFileNode + ".ignoreColorSpaceFileRules", 1)
+      cmds.setAttr(currentFileNode + '.colorSpace', "Raw", type="string")
+      cmds.setAttr(currentFileNode + ".alphaIsLuminance", 1)
+
+      # Set file name
+      # Connect Alpha to shader
         
 
         
