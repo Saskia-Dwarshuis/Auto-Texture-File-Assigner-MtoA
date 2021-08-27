@@ -46,7 +46,7 @@ for CurrentFile in SelectedFiles:
     currentFileNode = mel.eval('createRenderNodeCB -as2DTexture "" file ""')
     cmds.setAttr(currentFileNode + ".ignoreColorSpaceFileRules", 1)
     cmds.setAttr(currentFileNode + '.colorSpace', "Raw", type="string")
-    # Set file name
+    cmds.setAttr(currentFileNode + '.fileTextureName', CurrentFile, type="string")
     # Generate normal map node
     # Connect file node RGB out to normal map
     # Connect normal map node to standard surface
@@ -58,10 +58,15 @@ for CurrentFile in SelectedFiles:
     cmds.setAttr(currentFileNode + '.colorSpace', "Raw", type="string")
     cmds.setAttr(currentFileNode + ".alphaOffset", -0.5)
     cmds.setAttr(currentFileNode + ".alphaIsLuminance", 1)
-    # Set file name
+    cmds.setAttr(currentFileNode + '.fileTextureName', CurrentFile, type="string")
     # Generate displacement node
+    DisplacementShader = mel.eval('createRenderNodeCB -asShader "displacementShader" displacementShader ""')
     # Connect file node Alpha out to displacement
+    cmds.connectAttr(f=True, currentFileNode + ".outAlpha", DisplacementShader[0] + ".displacement")
+    # Find master shading node
+    ShadingEngineShader = cmds.listConnections(SelectedShader, s=False, t="shadingEngine")
     # Connect dispalcement node to selected shaders shading group
+    cmds.connectAttr(f=True, DisplacementShader[0] + ".displacement", ShadingEngineShader[0] + ".displacementShader")
     
   # Handle all other textures
   else:
@@ -72,9 +77,9 @@ for CurrentFile in SelectedFiles:
 
       if isUDIM == True:
         cmds.setAttr(currentFileNode + ".uvTilingMode", 3)
-
-      # Set file name
-      # Connect RGB to shader
+      
+      cmds.setAttr(currentFileNode + '.fileTextureName', CurrentFile, type="string")
+      cmds.connectAttr(f=True, currentFileNode + ".outColor", SelectedShader + "." + CorrespondingAttribute)
 
     # Handle Raw color space textures
     else: 
@@ -86,17 +91,5 @@ for CurrentFile in SelectedFiles:
       cmds.setAttr(currentFileNode + ".ignoreColorSpaceFileRules", 1)
       cmds.setAttr(currentFileNode + '.colorSpace', "Raw", type="string")
       cmds.setAttr(currentFileNode + ".alphaIsLuminance", 1)
-
-      # Set file name
-      # Connect Alpha to shader
-        
-
-        
-        
-        
-
-
-  
-# Set file name
-  string $fileName = "test";
-  setAttr -type "string" file1.fileTextureName $fileName;
+      cmds.setAttr(currentFileNode + '.fileTextureName', CurrentFile, type="string")     
+      cmds.connectAttr(f=True, currentFileNode + ".outAlpha", SelectedShader + "." + CorrespondingAttribute)
