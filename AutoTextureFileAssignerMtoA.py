@@ -2,7 +2,17 @@ import maya.cmds as cmds
 import maya.mel as mel
 
 # Shader attribute / texture file name dictionary
-FileNameToAttributeDictionary = {'baseColor': 'BaseColor', 'metalness': 'Metallic', 'specularRoughness': 'Roughness', 'normalCamera': 'Normal', 'height': 'Height'}
+FileNameToAttributeDictionary = {
+  'base': 'BaseWeight', 'baseColor': 'BaseColor', 'diffuseRoughness': 'DiffuseRoughness', 'metalness': 'Metallic', 
+  'specular': 'SpecularWeight', 'specularColor': 'SpecularColor', 'specularRoughness': 'Roughness', 
+  'transmission': 'TransmissionWeight', 'transmissionColor': 'TransmissionColor', 'transmissionDepth': 'TransmissionDepth', 
+  'transmissionScatter': 'TransmissionScatter', 'transmissionExtraRoughness': 'TransmissionExtraRoughness',
+  'subsurface': 'SubsurfaceWeight', 'subsurfaceColor': 'SubsurfaceColor', 'subsurfaceRadius': 'SubsurfaceRadius',
+  'coat': 'CoatWeight', 'coatColor': 'CoatColor', 'coatRoughness': 'CoatRoughness', 
+  'sheen': 'SheenWeight', 'sheenColor': 'SheenColor', 'sheenRoughness': 'SheenRoughness',
+  'emission': 'EmissionWeight', 'emissionColor': 'EmissionColor', 
+  'opacity': 'Opacity', 'normalCamera': 'Normal', 'height': 'Height'
+}
 
 # Shader attributes that require RGB color
 RGBOut = ['baseColor', 'specularColor', 'transmissionColor', 'transmissionScatter', 'subsurfaceColor', 'subsurfaceRadius', 'coatColor', 'sheenColor', 'emissionColor']
