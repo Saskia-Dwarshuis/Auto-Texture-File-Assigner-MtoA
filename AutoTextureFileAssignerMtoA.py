@@ -33,40 +33,19 @@ for CurrentFile in SelectedFiles:
   CorrespondingAttribute = "unassigned"
   isRGBOut = False
   
-  # Flag if the file uses UDIM space
-  if CurrentFile.find(".1001.") > -1:
-    isUDIM = True
-  
-  
-# Temporarily out code:
-  ## "Sanitizing" file name
-  # FirstUnderscoreIndex = CurrentFile.find("_")
-  # FirstPeriodIndex = CurrentFile.find(".")
-  # TruncatedFileName = CurrentFile[FirstUnderscoreIndex + 1:FirstPeriodIndex]
-  
-  
-  
-  # "Sanitizing" file name
-    # Take file name string:
-      # Travel from end of string forward, chop off characters until you hit your first "." (AKA you chop off the file type)
-      # If ".####" is at end of new string
-        # Mark as UDIM
-        # Chop off UDIM number
-      # Travel from end of string forward, save to a new string any characters that you encoutner before you hit an "_" 
+  # Finding the texture file's corresponding attribute
   CurrentFileReverseString = CurrentFile[::-1]
   CFNoFileType = CurrentFileReverseString.split(".", 1)
   CFNoFileType = CFNoFileType[1]
   CFNoUDIM = CFNoFileType
   
-  if CFNoFileType[0:3].isNumeric == True and CFNoFileType[4] == ".":
+  if CFNoFileType[0:3].isnumeric() == True and CFNoFileType[4] == ".":
     isUDIM = True
     CFNoUDIM = CFNoFileType[5:-1]
   
   CFOnlyAttribute = CFNoUDIM.split("_", 1)
   CFOnlyAttribute = CFOnlyAttribute[0]
   TruncatedFileName = CFOnlyAttribute[::-1]
-  
-  
   
   # Loop through shader attributes to find which attribute correspends to the current file
   for CurrentDictionaryKey in FileNameToAttributeDictionary.keys():
