@@ -6,11 +6,11 @@ Having to assign texture files to aiStandardSurface is not fun. Creating each fi
 
 ### How to use the script
 
-1. In the Hypershade, select the aiStandardSurface node that you want to connect texture files to.
-2. Run the script via hotkey or script editor.
+1. In the Hypershade editor, select the aiStandardSurface node that you want to connect texture files to.
+2. Run the script via a hotkey or the script editor.
 3. In the file selection dialog that pops up, select the files you wish to connect to the shader.
     1. The file names should be formatted as follows: *(FilePrefix_)ShaderChannel(.UDIM).FileType*
-    2. If you are working with UDIMs, select only one file in the series.
+    2. If you are working with UDIMs, select the first file in the series.
 4. Press the file selection dialog's "Open" button when done selecting files.
 5. The script will do its magic! File nodes will be generated, their settings updated to fit how the file should be used by the shader, then connected to the selected shader.
 
