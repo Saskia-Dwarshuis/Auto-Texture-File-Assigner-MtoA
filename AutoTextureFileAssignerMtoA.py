@@ -2,6 +2,7 @@ import maya.cmds as cmds
 import maya.mel as mel
 
 # Shader attribute / texture file name dictionary
+# The key is the attribute name used by Maya, the value is the corresponding search term(s) that should be used in the texture file name
 # To add additional search terms to an attribute, enter as a comma delimited list 
   # Eg. 'normalCamera': 'Normal' >>> 'normalCamera': 'Normal, OpenGLNormal, DirectXNormal'
 FileNameToAttributeDictionary = {
