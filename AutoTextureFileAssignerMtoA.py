@@ -47,7 +47,7 @@ for CurrentFile in SelectedFiles:
   CFOnlyAttribute = CFOnlyAttribute[0]
   TruncatedFileName = CFOnlyAttribute[::-1]
   
-  # Loop through shader attributes to find which attribute correspends to the current file
+  # Loop through shader attributes to find which attribute corresponds to the current file
   for CurrentDictionaryKey in FileNameToAttributeDictionary.keys():
     DictionaryValue = FileNameToAttributeDictionary[CurrentDictionaryKey]
     SearchTermList = DictionaryValue.split(", ")
