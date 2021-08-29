@@ -90,8 +90,7 @@ for CurrentFile in SelectedFiles:
     cmds.connectAttr(currentFileNode + '.outAlpha', DisplacementShader + '.displacement', f=True)
     ShadingEngineShader = cmds.listConnections(SelectedShader, t="shadingEngine", s=False)
     cmds.connectAttr(DisplacementShader + '.displacement', ShadingEngineShader[0] + '.displacementShader', f=True)
-    
-
+   
   # Handle all other textures
   else:
     
