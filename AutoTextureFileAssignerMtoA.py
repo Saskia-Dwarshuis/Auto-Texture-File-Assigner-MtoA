@@ -24,7 +24,8 @@ SelectedShader = cmds.ls(l=True, type="aiStandardSurface", sl=True)
 SelectedShader = SelectedShader[0]
 
 # Get texture files
-SelectedFiles = cmds.fileDialog2(ds=1, fm=4)
+StartingDirectory = cmds.workspace(q=True, rd=True)
+SelectedFiles = cmds.fileDialog2(ds=1, fm=4, dir=StartingDirectory)
 
 # Loop through selected files to figure out which texture goes to what shader channel
 for CurrentFile in SelectedFiles:
